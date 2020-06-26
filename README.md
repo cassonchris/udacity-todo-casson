@@ -98,7 +98,7 @@ The id of an item that should be updated is passed as a URL parameter.
 
 It should return an empty body.
 
-* `DeleteTodo` - should delete a TODO item created by a current user. Expects an id of a TODO item to remove.
+* [X] `DeleteTodo` - should delete a TODO item created by a current user. Expects an id of a TODO item to remove.
 
 It should return an empty body.
 
