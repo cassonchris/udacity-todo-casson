@@ -1,12 +1,52 @@
 import 'source-map-support/register'
-
-import { APIGatewayProxyEvent, APIGatewayProxyHandler, APIGatewayProxyResult } from 'aws-lambda'
-
+import * as AWS from 'aws-sdk'
+import * as AWSXRay from 'aws-xray-sdk'
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import { CreateTodoRequest } from '../../requests/CreateTodoRequest'
+import * as middy from 'middy'
+import { cors } from 'middy/middlewares'
+import { getUserId } from '../utils'
+import { TodoItem } from '../../models/TodoItem'
+import * as uuid from 'uuid'
 
-export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-  const newTodo: CreateTodoRequest = JSON.parse(event.body)
+const XAWS = AWSXRay.captureAWS(AWS)
 
-  // TODO: Implement creating a new TODO item
-  return undefined
-}
+const docClient = new XAWS.DynamoDB.DocumentClient()
+
+const todosTable = process.env.TODOS_TABLE
+
+export const handler = middy(
+  async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+    const newTodoRequest: CreateTodoRequest = JSON.parse(event.body)
+
+    const todoId = uuid.v4()
+    const userId = getUserId(event)
+    const createdAt = new Date().toISOString()
+
+    const newTodo: TodoItem = {
+      ...newTodoRequest,
+      userId,
+      todoId,
+      createdAt,
+      done: false
+    }
+
+    await docClient.put({
+      TableName: todosTable,
+      Item: newTodo
+    })
+
+    return {
+      statusCode: 201,
+      body: JSON.stringify({
+        newTodo
+      })
+    }
+  }
+)
+
+handler.use(
+  cors({
+    credentials: true
+  })
+)
