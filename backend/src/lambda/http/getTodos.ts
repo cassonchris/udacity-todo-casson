@@ -15,16 +15,6 @@ const todosTable = process.env.TODOS_TABLE
 export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     const userId = getUserId(event)
-    if (!userId) {
-      const error = 'failed to obtain userId'
-      console.error(`getTodos.handler -> ${error}`)
-      return {
-        statusCode: 500,
-        body: JSON.stringify({
-          error
-        })
-      }
-    }
 
     const todos = await getTodosByUserId(userId)
 

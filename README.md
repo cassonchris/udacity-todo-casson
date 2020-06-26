@@ -53,7 +53,7 @@ It should return data that looks like this:
 }
 ```
 
-* `CreateTodo` - should create a new TODO for a current user. A shape of data send by a client application to this function can be found in the `CreateTodoRequest.ts` file
+* [X] `CreateTodo` - should create a new TODO for a current user. A shape of data send by a client application to this function can be found in the `CreateTodoRequest.ts` file
 
 It receives a new TODO item to be created in JSON format that looks like this:
 
