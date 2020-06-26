@@ -24,7 +24,7 @@ You might also store an id of a user who created a TODO item.
 
 To implement this project, you need to implement the following functions and configure them in the `serverless.yml` file:
 
-* `Auth` - this function should implement a custom authorizer for API Gateway that should be added to all other functions.
+* [X] `Auth` - this function should implement a custom authorizer for API Gateway that should be added to all other functions.
 
 * `GetTodos` - should return all TODOs for a current user. A user id can be extracted from a JWT token that is sent by the frontend
 
