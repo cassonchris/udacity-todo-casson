@@ -12,8 +12,7 @@ export const handler = middy(
     const userId = getUserId(event)
 
     try {
-      const uploadUrl = getUploadUrl(todoId, userId)
-
+      const uploadUrl = await getUploadUrl(todoId, userId)
       return {
         statusCode: 200,
         body: JSON.stringify({

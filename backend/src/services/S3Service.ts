@@ -10,12 +10,14 @@ export class S3Service {
     private readonly urlExpiration = process.env.SIGNED_URL_EXPIRATION
   ) {}
 
-  getUploadUrl(todoId: string): string {
-    return this.s3.getSignedUrl('putObject', {
+  getAttachmentUrls(todoId: string): [string, string] {
+    const uploadUrl = this.s3.getSignedUrl('putObject', {
       Bucket: this.bucketName,
       Key: todoId,
       Expires: this.urlExpiration
     })
+    const attachmentUrl = `https://${this.bucketName}.s3.amazonaws.com/${todoId}`
+    return [uploadUrl, attachmentUrl]
   }
 }
 

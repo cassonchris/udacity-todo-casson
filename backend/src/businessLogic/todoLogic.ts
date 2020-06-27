@@ -55,14 +55,14 @@ export async function getUploadUrl(
   }
 
   // get the uploadUrl
-  const uploadUrl = s3Service.getUploadUrl(todoId)
+  const urls = s3Service.getAttachmentUrls(todoId)
 
   // update the todo
-  existingTodo.attachmentUrl = uploadUrl
+  existingTodo.attachmentUrl = urls[1]
   await todoAccess.updateTodo(existingTodo)
 
   // return the uploadUrl
-  return uploadUrl
+  return urls[0]
 }
 
 export async function updateTodo(
