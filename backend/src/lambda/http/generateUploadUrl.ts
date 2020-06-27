@@ -1,30 +1,38 @@
 import 'source-map-support/register'
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-import * as AWS from 'aws-sdk'
-import * as AWSXRay from 'aws-xray-sdk'
 import * as middy from 'middy'
 import { cors } from 'middy/middlewares'
-
-const XAWS = AWSXRay.captureAWS(AWS)
-
-const s3 = new XAWS.S3({
-  signatureVersion: 'v4'
-})
-
-const bucketName = process.env.TODO_ATTACHMENTS_S3_BUCKET
-const urlExpiration = process.env.SIGNED_URL_EXPIRATION
+import { getUserId } from '../utils'
+import { NotFoundError, UnauthorizedError } from '../../businessLogic/errors'
+import { getUploadUrl } from '../../businessLogic/todoLogic'
 
 export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     const todoId = event.pathParameters.todoId
+    const userId = getUserId(event)
 
-    const uploadUrl = getUploadUrl(todoId)
+    try {
+      const uploadUrl = await getUploadUrl(todoId, userId)
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          uploadUrl
+        })
+      }
+    } catch (err) {
+      let statusCode: number = 500
+      if (err instanceof NotFoundError) {
+        statusCode = 404
+      } else if (err instanceof UnauthorizedError) {
+        statusCode = 401
+      }
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        uploadUrl
-      })
+      return {
+        statusCode,
+        body: JSON.stringify({
+          message: err.message
+        })
+      }
     }
   }
 )
@@ -34,11 +42,3 @@ handler.use(
     credentials: true
   })
 )
-
-function getUploadUrl(todoId: string) {
-  return s3.getSignedUrl('putObject', {
-    Bucket: bucketName,
-    Key: todoId,
-    Expires: urlExpiration
-  })
-}
