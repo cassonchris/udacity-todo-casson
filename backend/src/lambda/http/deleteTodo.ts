@@ -7,7 +7,7 @@ import { cors } from 'middy/middlewares'
 import { TodoItem } from '../../models/TodoItem'
 import { getUserId } from '../utils'
 
-const XAWS = AWSXRay.capture(AWS)
+const XAWS = AWSXRay.captureAWS(AWS)
 
 const docClient = new XAWS.DynamoDB.DocumentClient()
 
@@ -46,10 +46,9 @@ export const handler = middy(
     await docClient
       .delete({
         TableName: todosTable,
-        IndexName: todoIdIndex,
-        KeyConditionExpression: 'todoId = :todoId',
-        ExpressionAttributeValues: {
-          ':todoId': todoId
+        Key: {
+          userId: existingTodo.userId,
+          createdAt: existingTodo.createdAt
         }
       })
       .promise()

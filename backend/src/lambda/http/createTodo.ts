@@ -31,10 +31,12 @@ export const handler = middy(
       done: false
     }
 
-    await docClient.put({
-      TableName: todosTable,
-      Item: newTodo
-    })
+    await docClient
+      .put({
+        TableName: todosTable,
+        Item: newTodo
+      })
+      .promise()
 
     return {
       statusCode: 201,

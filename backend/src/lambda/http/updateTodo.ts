@@ -8,7 +8,7 @@ import { cors } from 'middy/middlewares'
 import { TodoItem } from '../../models/TodoItem'
 import { getUserId } from '../utils'
 
-const XAWS = AWSXRay.capture(AWS)
+const XAWS = AWSXRay.captureAWS(AWS)
 
 const docClient = new XAWS.DynamoDB.DocumentClient()
 
@@ -45,13 +45,15 @@ export const handler = middy(
     }
 
     // assign the new values to the existing todo
-    const updatedTodo = { existingTodo, ...updatedTodoRequest }
+    const updatedTodo = { ...existingTodo, ...updatedTodoRequest }
 
     // send the updated todo to the docClient
-    await docClient.put({
-      TableName: todosTable,
-      Item: updatedTodo
-    })
+    await docClient
+      .put({
+        TableName: todosTable,
+        Item: updatedTodo
+      })
+      .promise()
 
     return {
       statusCode: 200,
