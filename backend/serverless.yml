@@ -1,5 +1,5 @@
 service:
-  name: udacity-todo-casson-backend
+  name: udacity-todo-api
 
 plugins:
   - serverless-webpack
@@ -124,6 +124,12 @@ functions:
           path: todos/{todoId}/attachment
           authorizer: Auth
           cors: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - s3:PutObject
+          - s3:GetObject
+        Resource: arn:aws:s3:::${self:provider.environment.TODO_ATTACHMENTS_S3_BUCKET}/*
 
 resources:
   Resources:
