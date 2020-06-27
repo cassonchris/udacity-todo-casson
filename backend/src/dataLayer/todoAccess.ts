@@ -14,7 +14,7 @@ export class TodoAccess {
     private readonly todoIdIndex = process.env.TODO_ID_INDEX
   ) {}
 
-  async CreateTodo(todo: TodoItem): Promise<TodoItem> {
+  async createTodo(todo: TodoItem): Promise<TodoItem> {
     await this.docClient
       .put({
         TableName: this.todosTable,
@@ -25,7 +25,7 @@ export class TodoAccess {
     return todo
   }
 
-  async GetTodoById(todoId: string): Promise<TodoItem> {
+  async getTodoById(todoId: string): Promise<TodoItem> {
     // get the todo by todoId
     const result = await this.docClient
       .query({
@@ -47,7 +47,7 @@ export class TodoAccess {
     }
   }
 
-  async GetTodosByUserId(userId: string): Promise<TodoItem[]> {
+  async getTodosByUserId(userId: string): Promise<TodoItem[]> {
     const result = await this.docClient
       .query({
         TableName: this.todosTable,
@@ -62,7 +62,7 @@ export class TodoAccess {
     return result.Items as TodoItem[]
   }
 
-  async UpdateTodo(todo: TodoItem): Promise<TodoItem> {
+  async updateTodo(todo: TodoItem): Promise<TodoItem> {
     await this.docClient
       .put({
         TableName: this.todosTable,
@@ -73,7 +73,7 @@ export class TodoAccess {
     return todo
   }
 
-  async DeleteTodo(
+  async deleteTodo(
     todo: TodoItem
   ): Promise<PromiseResult<DeleteItemOutput, AWSError>> {
     return await this.docClient
